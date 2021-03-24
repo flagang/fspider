@@ -1,0 +1,3 @@
+recursive-include fspider/templates *
+
+global-exclude __pycache__ *.py[cod]

@@ -1,10 +1,7 @@
 import codecs
 import os
 
-try:
-    from setuptools import setup, find_packages
-except:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -36,9 +33,9 @@ setup(
     },
     keywords="async spider",
     author="feng",
-    author_email="793168048@qq.com",
+    author_email="709642236@qq.com",
     license="MIT",
     packages=find_packages(),
     include_package_data=True,
-    zip_safe=True,
+    zip_safe=False,#True 的话egg方式安装
 )
