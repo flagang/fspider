@@ -51,8 +51,9 @@ class Worker:
                 self.idle.add(work_no)
                 await asyncio.sleep(1)
                 if len(self.idle) == self._num:  # 所有worker都空闲表示任务完成
-                    logging.info(f'all task idle worker {work_no} end')
+                    #     # do idle work
                     break
+            logging.info(f'all task idle worker {work_no} end')
 
     async def work(self, request: Request):
         try:
@@ -117,10 +118,14 @@ class Crawler:
         return True
 
     def handle_exit(self, sig, frame):
+        print('get exit signal!!!!')
         if self.should_exit:  # 第二次接收 强制关闭
             self.force_exit = True
         else:  # 第一次接收signal 向各个爬虫任务发送关闭信号 等待关闭
             self.should_exit = True
+
+    def handle_exit2(self, sig, frame):
+        print('handle_exit2!!!!')
 
     def install_signal_handlers(self):
         try:
@@ -137,8 +142,9 @@ class Crawler:
 
     async def start(self):
         self.loop = asyncio.get_event_loop()
-        self.install_signal_handlers()
         self.start_job()
+        await asyncio.sleep(0)  # 让出控制权 先执行job中的协程任务
+        self.install_signal_handlers()
         for spider_cls in self._spiders:
             await self.crawl(spider_cls)
         await asyncio.sleep(0)  # 交出控制权 执行self._spiders 爬虫任务
@@ -149,6 +155,7 @@ class Crawler:
             await asyncio.sleep(0.5)
         if self.should_exit:
             self.stop_workers()
+            self.stop = True
         while not self.all_spider_finished() and not self.force_exit:
             await asyncio.sleep(0.5)
 

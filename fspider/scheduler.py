@@ -1,7 +1,7 @@
 import json
 import logging
 
-from typing import Optional
+from typing import Optional, List, Set
 from fspider.http.request import Request
 from fspider.spider import Spider
 import redis
@@ -31,6 +31,26 @@ class Scheduler:
         hl = hashlib.md5()
         hl.update(request.url.encode(encoding='utf-8'))
         return hl.hexdigest()
+
+
+class PyScheduler(Scheduler):
+    def __init__(self, spider: Spider):
+        super().__init__(spider)
+        self._requests: List[Request] = []
+        self._dupefilter: Set[str] = set()
+
+    def push_request(self, request: Request):
+        _fingerprint = self.request_fingerprint(request)
+        if _fingerprint in self._dupefilter:
+            logging.info(f'{request} dupefilter ')
+        else:
+            self._requests.append(request)
+            self._dupefilter.add(_fingerprint)
+
+    def pop_request(self) -> Optional[Request]:
+        if len(self._requests) > 0:
+            return self._requests.pop(0)
+        return None
 
 
 class RedisScheduler(Scheduler):
@@ -69,7 +89,7 @@ class RedisScheduler(Scheduler):
         return request_from_dict(d, self.spider)
 
     def pop_request(self) -> Optional[Request]:
-        result= self.server.lpop(self.request_key)
+        result = self.server.lpop(self.request_key)
         if result:
             return self.encode_request(result.decode())
         # pipe = self.server.pipeline()

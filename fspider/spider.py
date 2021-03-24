@@ -37,4 +37,5 @@ class Spider:
         pass
 
     async def spider_closed(self):
+        print('spider_closed ')
         pass
