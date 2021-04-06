@@ -1,10 +1,14 @@
+import logging
 from typing import Generator, List, Dict, Iterable, AsyncIterable, Optional
+
+from fspider import signals
 from fspider.http.request import Request
 from fspider.http.response import Response
 from fspider.utils.misc import load_object
 
 
 class Spider:
+    name = 'fspider'
     settings: Dict = {
         'scheduler_cls': 'fspider.scheduler.RedisScheduler'
     }
@@ -14,11 +18,14 @@ class Spider:
     def __init__(self):
         scheduler_cls = self.settings['scheduler_cls']
         self._scheduler = load_object(scheduler_cls)(self)
+        signals.connect(receiver=self.spider_opened, sender=self, signal=signals.spider_opened)
+        self.logger = logging.getLogger(self.name)
 
     @classmethod
-    async def create_spider(cls) -> "Spider":
+    async def create_spider(cls, crawler: "Crawler") -> "Spider":
         obj = cls()
-        await obj.spider_opened()
+        obj.crawler = crawler
+        # await obj.spider_opened()
         return obj
 
     async def start_requests(self) -> AsyncIterable[Request]:
@@ -34,8 +41,8 @@ class Spider:
         start_spider(cls)
 
     async def spider_opened(self):
-        pass
+        self.logger.info(f' spider_opened!!!!!!!!!!!')
 
     async def spider_closed(self):
-        print('spider_closed ')
+        self.logger.info('spider_closed ')
         pass

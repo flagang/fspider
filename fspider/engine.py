@@ -1,14 +1,15 @@
-import random
-from asyncio import iscoroutine, iscoroutinefunction
-
-from typing import Type, List, Union, Callable, Coroutine, Any
-from fspider.http.downloader import down, close
-from fspider.http.request import Request
-from fspider.spider import Spider
 import asyncio
 import logging
+import random
 import signal
+from asyncio import iscoroutinefunction
+from typing import Type, List, Callable, Any
+from fspider import context, signals
+from fspider.http.downloader import down
+from fspider.http.request import Request
+from fspider.spider import Spider
 
+logger = logging.getLogger(__name__)
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
     signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
@@ -38,22 +39,22 @@ class Worker:
         self._close_signal = True
 
     async def start_worker(self, work_no: int):
-        logging.info(f'worker {work_no} start!')
+        logger.info(f'worker {work_no} start!')
         while not self._close_signal:
             request = self._scheduler.pop_request()
             if request:
-                logging.info(f'worker_{work_no}: begin process {request}')
+                logger.info(f'worker_{work_no}: begin process {request}')
                 if work_no in self.idle:
                     self.idle.remove(work_no)
                 await self.work(request)
-                logging.info(f'worker_{work_no}: end process {request}')
+                logger.info(f'worker_{work_no}: end process {request}')
             else:
                 self.idle.add(work_no)
                 await asyncio.sleep(1)
                 if len(self.idle) == self._num:  # 所有worker都空闲表示任务完成
                     #     # do idle work
                     break
-            logging.info(f'all task idle worker {work_no} end')
+            logger.info(f'all task idle worker {work_no} end')
 
     async def work(self, request: Request):
         try:
@@ -65,7 +66,7 @@ class Worker:
                     self._scheduler.push_request(result)
                 else:
                     if result:
-                        logging.info(f'success save {result}')
+                        logger.info(f'success save {result}')
         except Exception:
             logging.exception(f'error while process {request}')
             # if self.spider.settings.get('',False):
@@ -88,8 +89,10 @@ class Crawler:
     async def _crawl(self, spider_cls: Type[Spider]):
         worker = None
         try:
-            spider = await spider_cls.create_spider()
-            await spider.spider_opened()
+            spider = await spider_cls.create_spider(self)
+            # await spider.spider_opened()
+            context.spider.set(spider)
+            await signals.send(signal=signals.spider_opened)
             settings = spider.settings
             workers = settings.get('workers')
             worker = Worker(spider, workers)
@@ -141,6 +144,7 @@ class Crawler:
             worker.close()
 
     async def start(self):
+        context.crawler.set(self)
         self.loop = asyncio.get_event_loop()
         self.start_job()
         await asyncio.sleep(0)  # 让出控制权 先执行job中的协程任务
@@ -175,7 +179,7 @@ class Crawler:
 
 
 def start_spider(cls):
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+    logging.basicConfig(level=logger.info, format='%(asctime)s - %(levelname)s: %(message)s')
     crawler = Crawler()
     crawler.add_spider(cls)
     crawler.run()
