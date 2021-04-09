@@ -1,0 +1,28 @@
+import asyncio
+from fspider.engine import Crawler
+from ${project_name}.spiders.test import TestSpider
+async def serve(crawler: Crawler):
+    from fastapi import FastAPI
+    from uvicorn import Config, Server
+    app = FastAPI()
+
+    @app.get("/")
+    async def hello(index: str):
+        return {f"Hello: {index}"}
+
+    config = Config(app, host="0.0.0.0", port=8000, log_level="info", reload=True)
+    server = Server(config)
+    await server.serve()
+
+
+async def timer(crawler: Crawler):
+    for i in range(1):
+        await crawler.crawl(TestSpider)
+        await asyncio.sleep(10)
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s  [%(name)s] %(levelname)s: %(message)s')
+    crawler = Crawler()
+    # crawler.add_job(timer)#简易定时任务
+    crawler.add_job(serve)#同时启动web服务 请在py3.7使用,py3.8有bug
+    crawler.add_spider(TestSpider)
+    crawler.run(stop=False)

@@ -12,7 +12,7 @@ setup(
     name="fspider",
     version="1.0.0",
     description="基于asyncio异步爬虫网络框架，仿scrapy",
-    long_description=read("README.txt"),
+    long_description=read("README.md"),
     classifiers=
     [
         'License :: OSI Approved :: MIT License',

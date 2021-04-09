@@ -2,14 +2,14 @@ import string
 
 import os
 from os.path import join, exists
-from shutil import copytree
+from shutil import copytree, ignore_patterns
 
 from argparse import Namespace
 
 import fspider
 from fspider.commands import CMD
 
-
+ignore=ignore_patterns('*.pyc', '__pycache__', '.svn')
 class SpiderCMD(CMD):
     def help(self) -> str:
         return 'create project <project_name> [project_dir]'
@@ -17,7 +17,7 @@ class SpiderCMD(CMD):
     def add_arguments(self):
         self.cmd.add_argument('project_name', help='the project name', type=str)
         self.cmd.add_argument('project_dir', help='the project dir,current dir will use if not set', type=str,
-                              default='')
+                              default='.')
 
     def run(self, args: Namespace):
         project_name = args.project_name
@@ -31,7 +31,9 @@ class SpiderCMD(CMD):
         if exists(path):
             print(f'{project_name} has exists  ')
         else:
-            copytree(self.templates_dir(), path)
+            copytree(self.templates_dir(), path,ignore=ignore)
+            print(os.path.join(path,'module'),os.path.join(path,project_name))
+            os.rename(os.path.join(path,'module'),os.path.join(path,project_name))
             return path
 
     def _render(self, path, project_name):

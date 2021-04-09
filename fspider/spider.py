@@ -19,6 +19,7 @@ class Spider:
         scheduler_cls = self.settings['scheduler_cls']
         self._scheduler = load_object(scheduler_cls)(self)
         signals.connect(receiver=self.spider_opened, sender=self, signal=signals.spider_opened)
+        signals.connect(receiver=self.spider_closed, sender=self, signal=signals.spider_closed)
         self.logger = logging.getLogger(self.name)
 
     @classmethod
@@ -41,7 +42,7 @@ class Spider:
         start_spider(cls)
 
     async def spider_opened(self):
-        self.logger.info(f' spider_opened!!!!!!!!!!!')
+        self.logger.info('spider_opened!!!!!!!!!!!')
 
     async def spider_closed(self):
         self.logger.info('spider_closed ')
