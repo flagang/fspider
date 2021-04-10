@@ -16,8 +16,9 @@ class SpiderCMD(CMD):
 
     def add_arguments(self):
         self.cmd.add_argument('project_name', help='the project name', type=str)
-        self.cmd.add_argument('project_dir', help='the project dir,current dir will use if not set', type=str,
-                              default='.')
+        self.cmd.add_argument('project_dir', default='.',nargs='*',
+                              help='the project dir,current dir will use if not set',
+                              )
 
     def run(self, args: Namespace):
         project_name = args.project_name
@@ -32,7 +33,6 @@ class SpiderCMD(CMD):
             print(f'{project_name} has exists  ')
         else:
             copytree(self.templates_dir(), path,ignore=ignore)
-            print(os.path.join(path,'module'),os.path.join(path,project_name))
             os.rename(os.path.join(path,'module'),os.path.join(path,project_name))
             return path
 

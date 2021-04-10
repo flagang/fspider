@@ -11,7 +11,7 @@ python>=3.7
 目前不支持pip安装,下载源码 然后执行```python setup.py install```
 
 #### 教程
-#### 创建项目
+##### 创建项目
 fspdier startproject 命令有两个参数-项目名称和项目路径
 ```fspdier startproject testspider .``` 在当前目录创建testspider项目
 ```
