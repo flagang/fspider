@@ -8,6 +8,7 @@ from fspider import context, signals
 from fspider.http.downloader import down
 from fspider.http.request import Request
 from fspider.spider import Spider
+from fspider.spidermiddlewares import SpiderMiddlewareManager
 
 logger = logging.getLogger(__name__)
 HANDLED_SIGNALS = (
@@ -23,10 +24,17 @@ class Worker:
         self._num = num
         self.idle = set()  # 空闲worker 编号
         self._close_signal = False  # 是否接收到singal 信号
+        self.loads()
+
+    def loads(self):
+        self.load_middrewares()
+
+    def load_middrewares(self):
+        self.spider_middlewares_manager = SpiderMiddlewareManager(self.spider.settings)
 
     async def run(self):
         if len(self._scheduler) == 0:
-            async for resquest in self.spider.start_requests():
+            async for resquest in self.spider_middlewares_manager.process_start_requests(self.spider.start_requests()):
                 self._scheduler.push_request(resquest)
         tasks = [self.start_worker(i) for i in range(self._num)]
         await asyncio.gather(*tasks, return_exceptions=True)
@@ -61,7 +69,7 @@ class Worker:
             callback = request.callback
             response = await down(request)
             await asyncio.sleep(random.randint(10, 15) / 10)
-            async for result in callback(response):
+            async for result in self.spider_middlewares_manager.process_spider_output(response, callback(response)):
                 if isinstance(result, Request):
                     self._scheduler.push_request(result)
                 else:
@@ -89,7 +97,7 @@ class Crawler:
     async def _crawl(self, spider_cls: Type[Spider]):
         worker = None
         try:
-            spider = await spider_cls.create_spider(self)
+            spider = spider_cls()
             # await spider.spider_opened()
             context.spider.set(spider)
             await signals.send(signal=signals.spider_opened)

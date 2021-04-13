@@ -25,4 +25,4 @@ class TestSpider(Spider):
         yield
 
     async def spider_opened(self):
-        super(TestSpider, self).spider_opened()
+        await super(TestSpider, self).spider_opened()

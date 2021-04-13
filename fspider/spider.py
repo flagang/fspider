@@ -5,29 +5,25 @@ from fspider import signals
 from fspider.http.request import Request
 from fspider.http.response import Response
 from fspider.utils.misc import load_object
+from fspider.utils.project import get_settings
 
 
 class Spider:
     name = 'fspider'
-    settings: Dict = {
+    custom_settings: Dict = {
         'scheduler_cls': 'fspider.scheduler.RedisScheduler'
     }
     start_urls: List[str]
     name: Optional[str] = None
 
     def __init__(self):
+        self.settings = get_settings()
+        self.settings.update(self.custom_settings)
         scheduler_cls = self.settings['scheduler_cls']
         self._scheduler = load_object(scheduler_cls)(self)
         signals.connect(receiver=self.spider_opened, sender=self, signal=signals.spider_opened)
         signals.connect(receiver=self.spider_closed, sender=self, signal=signals.spider_closed)
         self.logger = logging.getLogger(self.name)
-
-    @classmethod
-    async def create_spider(cls, crawler: "Crawler") -> "Spider":
-        obj = cls()
-        obj.crawler = crawler
-        # await obj.spider_opened()
-        return obj
 
     async def start_requests(self) -> AsyncIterable[Request]:
         for url in self.start_urls:

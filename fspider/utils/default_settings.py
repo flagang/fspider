@@ -1,2 +1,2 @@
-workers = 5
+WORKERS = 10
 scheduler_cls = 'fspider.scheduler.PyScheduler'

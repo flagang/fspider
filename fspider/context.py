@@ -1,5 +1,5 @@
 import contextvars
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Dict
 
 T = TypeVar('T')
 
@@ -17,3 +17,4 @@ class ContextManager(Generic[T]):
 
 spider = ContextManager('spider')
 crawler = ContextManager('crawler')
+settings = ContextManager('settings')

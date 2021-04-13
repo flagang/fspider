@@ -1,22 +1,37 @@
 import os
 from configparser import ConfigParser
 from importlib import import_module
+from typing import Dict
+
+from fspider.utils import default_settings
 
 
-def get_settings():
-    setting = {}
+def get_md_map(module):
+    settings = {}
+    for key in dir(module):
+        if key.isupper():
+            settings[key] = getattr(module, key)
+    return settings
+
+
+def get_default_settings() -> Dict:
+    return get_md_map(default_settings)
+
+
+def get_settings() -> Dict:
     md = get_settings_moudle()
     module = import_module(md)
-    for key in dir(module):
-        setting[key] = getattr(module, key)
-    return setting
+    settings = get_md_map(module)
+    df_settings = get_default_settings()
+    df_settings.update(settings)
+    return df_settings
 
 
 def get_settings_moudle():
     current_dir = os.getcwd()
     cfg = ConfigParser()
-    path = os.path.join(current_dir, 'fspider.cfg')
-    if os.path.exists():
+    path = os.path.join(current_dir, 'fspider.cfg.tmpl')
+    if os.path.exists(path):
         cfg.read(path)
         return cfg.get('settings', 'default')
-    return f'{os.path.basename()}.settings'
+    return f'{os.path.basename(current_dir)}.settings'

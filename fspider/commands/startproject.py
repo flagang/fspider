@@ -8,6 +8,7 @@ from argparse import Namespace
 
 import fspider
 from fspider.commands import CMD
+from fspider.utils.strings import string_camelcase
 
 ignore=ignore_patterns('*.pyc', '__pycache__', '.svn')
 class SpiderCMD(CMD):
@@ -29,7 +30,7 @@ class SpiderCMD(CMD):
 
     def _create(self, project_name: str, project_dir: str):
         path = join(project_dir, project_name)
-        if exists(path):
+        if exists(path) :
             print(f'{project_name} has exists  ')
         else:
             copytree(self.templates_dir(), path,ignore=ignore)
@@ -41,7 +42,7 @@ class SpiderCMD(CMD):
             for f in files:
                 file_path = join(root, f)
                 if file_path.endswith('tmpl'):
-                    self.render_templatefile(file_path, project_name=project_name)
+                    self.render_templatefile(file_path, project_name=project_name,ProjectName=string_camelcase(project_name))
 
     def templates_dir(self):
         _templates_base_dir = join(fspider.__path__[0], 'templates')

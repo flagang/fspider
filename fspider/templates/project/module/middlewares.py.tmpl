@@ -1,0 +1,29 @@
+from fspider.spidermiddlewares import SpiderMiddleware
+from fspider.utils.type import SpiderRequest
+from fspider.http.response import Response
+
+
+class ${ProjectName}SpiderMiddleware(SpiderMiddleware):
+    async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
+        async for r in result:
+            print('process_start_requests',r)
+            yield r
+
+    async def process_spider_exception(self, response: Response, exception: Exception):
+        # Called when a spider or process_spider_input() method
+        # (from other spider middleware) raises an exception.
+
+        # Should return either None or an iterable of Request or item objects.
+        pass
+
+    async def process_spider_input(self, response: Response):
+        return None
+
+    async def process_spider_output(self, response: Response, result: SpiderRequest) -> SpiderRequest:
+        # Called with the results returned from the Spider, after
+        # it has processed the response.
+
+        # Must return an iterable of Request, or item objects.
+        async for i in result:
+            print('process_start_requests',r)
+            yield i
