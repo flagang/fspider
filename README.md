@@ -56,3 +56,54 @@ async def spider_opened():
     pass
 signals.connect(receiver=spider_opened, signal=signals.spider_opened)
 ```
+#### spider middreware
+spider middreware 是用来处理spider结果的组件
+一个简单的spider middreware 如下所示：
+```python
+from fspider.http.response import Response
+from fspider.spidermiddlewares import SpiderMiddleware
+from fspider.utils.type import SpiderRequest
+
+class TestSpiderMiddleware(SpiderMiddleware):
+    async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
+        async for r in result:
+            print('process_start_requests', r)
+            yield r
+
+    async def process_spider_output(self, response: Response, result: SpiderRequest) -> SpiderRequest:
+        async for i in result:
+            print('process_spider_output', i)
+            yield i
+```
+之后你需要在setting中配置启用：
+```python
+SPIDER_MIDDLEWARES = {
+    'test.middlewares.TestSpiderMiddleware': 543,
+}
+```
+
+#### downloader middreware
+downloader middreware 是用来处理request请求，最终得到response的一系列组件，
+一个简单的downloader middreware 如下所示
+```python
+from typing import Union
+from fspider.downloadermiddlewares import DownloaderMiddleware
+from fspider.http.request import Request
+from fspider.http.response import Response
+class TestDownloaderMiddleware(DownloaderMiddleware):
+    async def process_request(self, request: Request) -> Union[Request, Response, None]:
+        print('TestDownloaderMiddleware', request)
+        return None
+
+    async def process_response(self, request: Request, response: Response) -> Union[Request, Response]:
+        print('TfDownloaderMiddleware process_response', response)
+        return response
+
+```
+之后你需要在setting中配置启用：
+```python
+DOWNLOADER_MIDDLEWARES = {
+    'test.middlewares.TestDownloaderMiddleware': 543,
+}
+```
+> DOWNLOADER_MIDDLEWARES 会先顺序执行各个middlewares的process_request方法，之后倒叙执行process_response

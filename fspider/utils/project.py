@@ -23,7 +23,11 @@ def get_settings() -> Dict:
     module = import_module(md)
     settings = get_md_map(module)
     df_settings = get_default_settings()
-    df_settings.update(settings)
+    for k, v in settings.items():
+        if isinstance(v, Dict) and k in df_settings:
+            df_settings[k].update(v)
+        else:
+            df_settings[k] = v
     return df_settings
 
 

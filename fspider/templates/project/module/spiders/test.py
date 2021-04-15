@@ -1,4 +1,4 @@
-from typing import AsyncIterable
+from typing import AsyncIterable, Dict
 from fspider.http.request import Request
 from fspider.http.response import Response
 from fspider.spider import Spider
@@ -6,11 +6,8 @@ from fspider.spider import Spider
 
 class TestSpider(Spider):
     name = 'test'
-    settings = {
-        'scheduler_cls': 'fspider.scheduler.PyScheduler',
-        # 'scheduler_cls': 'fspider.scheduler.RedisScheduler',
-        # 'redis_url': "redis://127.0.0.1:6379/11",
-        'workers': 5
+    custom_settings: Dict = {
+        'scheduler_cls': 'fspider.scheduler.PyScheduler'
     }
 
     def __init__(self):

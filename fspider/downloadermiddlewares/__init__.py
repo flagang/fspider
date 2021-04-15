@@ -1,37 +1,15 @@
-from typing import Union
-from fspider.downloadermiddlewares import DownloaderMiddleware
+import logging
+from typing import Dict, List, Union
+
+from fspider import context
 from fspider.http.request import Request
 from fspider.http.response import Response
-from fspider.spidermiddlewares import SpiderMiddleware
-from fspider.utils.type import SpiderRequest
+from fspider.utils.middleware import loads
+
+logger = logging.getLogger(__name__)
 
 
-class ${ProjectName}SpiderMiddleware(SpiderMiddleware):
-    async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
-        async for r in result:
-            print('process_start_requests',r)
-            yield r
-
-    async def process_spider_exception(self, response: Response, exception: Exception):
-        # Called when a spider or process_spider_input() method
-        # (from other spider middleware) raises an exception.
-
-        # Should return either None or an iterable of Request or item objects.
-        pass
-
-    async def process_spider_input(self, response: Response):
-        return None
-
-    async def process_spider_output(self, response: Response, result: SpiderRequest) -> SpiderRequest:
-        # Called with the results returned from the Spider, after
-        # it has processed the response.
-
-        # Must return an iterable of Request, or item objects.
-        async for i in result:
-            print('process_start_requests',i)
-            yield i
-
-class ${ProjectName}DownloaderMiddleware(DownloaderMiddleware):
+class DownloaderMiddleware:
     async def process_request(self, request: Request) -> Union[Request, Response, None]:
         # Called for each request that goes through the downloader
         # middleware.
@@ -62,3 +40,25 @@ class ${ProjectName}DownloaderMiddleware(DownloaderMiddleware):
         # - return a Response object: stops process_exception() chain
         # - return a Request object: stops process_exception() chain
         pass
+
+
+class DownloaderMiddlewareManager:
+    name = 'DOWNLOADER_MIDDLEWARES'
+
+    def __init__(self, settings: Dict = None):
+        if settings is None:
+            settings = context.settings.get()
+        logger.info(settings.get(self.name))
+        self._middlewares: List[DownloaderMiddleware] = loads(settings.get(self.name))
+
+    async def down(self, request: Request) -> Union[Request, Response, None]:
+        for md in self._middlewares:
+            result = await md.process_request(request)
+            if result is not None:
+                break
+        if isinstance(result, Response):
+            for md in reversed(self._middlewares):
+                result = await md.process_response(request, result)
+                if not isinstance(result, Response):
+                    break
+        return result

@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 spider_opened = object()
 spider_closed = object()
+crawler_closed = object()
 
 
 def disconnect_all(signal=Any, sender=Any):
@@ -24,13 +25,13 @@ def disconnect_all(signal=Any, sender=Any):
 def connect(receiver, signal, sender=None, **kwargs):
     if not sender:
         sender = context.spider.get()
-    return dispatcher.connect(receiver, signal, sender, ** kwargs)
+    return dispatcher.connect(receiver, signal, sender, **kwargs)
 
 
 async def send(signal, sender=None, *args, **kwargs):
     if not sender:
         sender = context.spider.get()
-    return await _send_catch_log(signal,sender, *args, **kwargs)
+    return await _send_catch_log(signal, sender, *args, **kwargs)
 
 
 async def _send_catch_log(signal, sender, *args, **kwargs):

@@ -5,6 +5,7 @@ import signal
 from asyncio import iscoroutinefunction
 from typing import Type, List, Callable, Any
 from fspider import context, signals
+from fspider.downloadermiddlewares import DownloaderMiddlewareManager
 from fspider.http.downloader import down
 from fspider.http.request import Request
 from fspider.spider import Spider
@@ -31,6 +32,7 @@ class Worker:
 
     def load_middrewares(self):
         self.spider_middlewares_manager = SpiderMiddlewareManager(self.spider.settings)
+        self.downloader_middlewares_manager = DownloaderMiddlewareManager(self.spider.settings)
 
     async def run(self):
         if len(self._scheduler) == 0:
@@ -67,7 +69,7 @@ class Worker:
     async def work(self, request: Request):
         try:
             callback = request.callback
-            response = await down(request)
+            response = await self.downloader_middlewares_manager.down(request)
             await asyncio.sleep(random.randint(10, 15) / 10)
             async for result in self.spider_middlewares_manager.process_spider_output(response, callback(response)):
                 if isinstance(result, Request):
@@ -100,11 +102,11 @@ class Crawler:
             spider = spider_cls()
             # await spider.spider_opened()
             context.spider.set(spider)
-            await signals.send(signal=signals.spider_opened)
             settings = spider.settings
-            workers = settings.get('workers')
+            workers = settings.get('WORKERS')
             worker = Worker(spider, workers)
             self._running_worker.append(worker)
+            await signals.send(signal=signals.spider_opened)  # spider 和 middlewares 都已加载完成
             await worker.run()
             await spider.spider_closed()
         except Exception:
@@ -170,6 +172,7 @@ class Crawler:
             self.stop = True
         while not self.all_spider_finished() and not self.force_exit:
             await asyncio.sleep(0.5)
+        await signals.send(signals.crawler_closed, sender='fspider')
 
     def start_job(self):
         for job in self.jobs:
