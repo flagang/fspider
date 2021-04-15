@@ -92,11 +92,11 @@ from fspider.http.request import Request
 from fspider.http.response import Response
 class TestDownloaderMiddleware(DownloaderMiddleware):
     async def process_request(self, request: Request) -> Union[Request, Response, None]:
-        print('TestDownloaderMiddleware', request)
+        print('process_request', request)
         return None
 
     async def process_response(self, request: Request, response: Response) -> Union[Request, Response]:
-        print('TfDownloaderMiddleware process_response', response)
+        print('process_response', response)
         return response
 
 ```
