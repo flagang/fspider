@@ -5,3 +5,4 @@ from fspider.http.request import Request
 SpiderResults = AsyncIterable[Union[Request, Dict]]
 SpiderRequest = AsyncIterable[Request]
 MiddlewareSetting = Dict[str, Union[None, int]]
+Item = Union[Dict]

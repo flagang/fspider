@@ -8,6 +8,7 @@ from fspider import context, signals
 from fspider.downloadermiddlewares import DownloaderMiddlewareManager
 from fspider.http.downloader import down
 from fspider.http.request import Request
+from fspider.pipelines import PipelineManager
 from fspider.spider import Spider
 from fspider.spidermiddlewares import SpiderMiddlewareManager
 
@@ -33,6 +34,7 @@ class Worker:
     def load_middrewares(self):
         self.spider_middlewares_manager = SpiderMiddlewareManager(self.spider.settings)
         self.downloader_middlewares_manager = DownloaderMiddlewareManager(self.spider.settings)
+        self.pipeline_manager = PipelineManager(self.spider.settings)
 
     async def run(self):
         if len(self._scheduler) == 0:
@@ -76,6 +78,7 @@ class Worker:
                     self._scheduler.push_request(result)
                 else:
                     if result:
+                        result = await self.pipeline_manager.process_item(result)
                         logger.info(f'success save {result}')
         except Exception:
             logging.exception(f'error while process {request}')

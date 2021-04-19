@@ -1,10 +1,8 @@
 import logging
-from typing import Dict, List
 
-from fspider import context
 from fspider.http.response import Response
-from fspider.utils.middleware import loads
-from fspider.utils.type import SpiderRequest, SpiderResults, MiddlewareSetting
+from fspider.utils.middleware import MiddlewareLoader
+from fspider.utils.type import SpiderRequest
 
 logger = logging.getLogger(__name__)
 
@@ -33,15 +31,8 @@ class SpiderMiddleware:
             yield i
 
 
-class SpiderMiddlewareManager:
+class SpiderMiddlewareManager(MiddlewareLoader):
     name = 'SPIDER_MIDDLEWARES'
-
-    def __init__(self, settings: Dict = None):
-        if settings is None:
-            settings = context.settings.get()
-        logger.info(settings.get(self.name))
-        self._middlewares: List[SpiderMiddleware] = loads(settings.get(self.name))
-        logger.info(self._middlewares)
 
     async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
         for md in self._middlewares:
@@ -55,6 +46,6 @@ class SpiderMiddlewareManager:
 
         # Must return an iterable of Request, or item objects.
         for md in self._middlewares:
-            result = md.process_spider_output(response,result)
+            result = md.process_spider_output(response, result)
         async for r in result:
             yield r

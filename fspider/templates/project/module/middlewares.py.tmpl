@@ -28,7 +28,7 @@ class ${ProjectName}SpiderMiddleware(SpiderMiddleware):
 
         # Must return an iterable of Request, or item objects.
         async for i in result:
-            print('process_start_requests',i)
+            print('process_spider_output',i)
             yield i
 
 class ${ProjectName}DownloaderMiddleware(DownloaderMiddleware):

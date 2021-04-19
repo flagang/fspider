@@ -19,7 +19,7 @@ class TestSpider(Spider):
 
     async def parse(self, response: Response):
         self.logger.info(response.text)
-        yield
+        yield {'index': response.text}
 
     async def spider_opened(self):
         await super(TestSpider, self).spider_opened()

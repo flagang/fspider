@@ -1,10 +1,9 @@
 import logging
-from typing import Dict, List, Union
+from typing import Union
 
-from fspider import context
 from fspider.http.request import Request
 from fspider.http.response import Response
-from fspider.utils.middleware import loads
+from fspider.utils.middleware import MiddlewareLoader
 
 logger = logging.getLogger(__name__)
 
@@ -42,14 +41,8 @@ class DownloaderMiddleware:
         pass
 
 
-class DownloaderMiddlewareManager:
+class DownloaderMiddlewareManager(MiddlewareLoader):
     name = 'DOWNLOADER_MIDDLEWARES'
-
-    def __init__(self, settings: Dict = None):
-        if settings is None:
-            settings = context.settings.get()
-        logger.info(settings.get(self.name))
-        self._middlewares: List[DownloaderMiddleware] = loads(settings.get(self.name))
 
     async def down(self, request: Request) -> Union[Request, Response, None]:
         for md in self._middlewares:

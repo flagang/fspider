@@ -1,0 +1,9 @@
+from typing import Optional
+
+from fspider.utils.type import Item
+from fspider.pipelines import Pipeline
+
+
+class ${ProjectName}Pipeline(Pipeline):
+    async def process_item(self, item: Item) -> Optional[Item]:
+        return item

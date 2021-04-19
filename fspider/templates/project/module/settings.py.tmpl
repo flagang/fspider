@@ -38,5 +38,7 @@ SPIDER_MIDDLEWARES = {
 DOWNLOADER_MIDDLEWARES = {
     '$project_name.middlewares.${ProjectName}DownloaderMiddleware': 543,
 }
-
+ITEM_PIPELINES = {
+    '$project_name.pipelines.${ProjectName}Pipeline': 300,
+}
 
