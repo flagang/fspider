@@ -4,7 +4,7 @@ from fspider import context
 from fspider.http.request import Request
 from fspider.http.response import Response
 from fspider.spidermiddlewares import SpiderMiddleware
-from fspider.utils.type import SpiderRequest
+from fspider.utils.type import SpiderResult
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class DepthMiddleware(SpiderMiddleware):
         self.verbose_stats = self.settings.get('DEPTH_STATS_VERBOSE', False)
         self.prio = self.settings.get('DEPTH_PRIORITY', 0)
 
-    async def process_spider_output(self, response: Response, result: SpiderRequest) -> SpiderRequest:
+    async def process_spider_output(self, response: Response, result: SpiderResult) -> SpiderResult:
         spider = context.spider.get()
         response.meta.setdefault('depth', 0)
         async for r in result:

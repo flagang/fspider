@@ -2,13 +2,13 @@ import logging
 
 from fspider.http.response import Response
 from fspider.utils.middleware import MiddlewareLoader, Middleware
-from fspider.utils.type import SpiderRequest
+from fspider.utils.type import SpiderResult
 
 logger = logging.getLogger(__name__)
 
 
 class SpiderMiddleware(Middleware):
-    async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
+    async def process_start_requests(self, result: SpiderResult) -> SpiderResult:
         async for r in result:
             yield r
 
@@ -22,7 +22,7 @@ class SpiderMiddleware(Middleware):
     async def process_spider_input(self, response: Response):
         return None
 
-    async def process_spider_output(self, response: Response, result: SpiderRequest) -> SpiderRequest:
+    async def process_spider_output(self, response: Response, result: SpiderResult) -> SpiderResult:
         # Called with the results returned from the Spider, after
         # it has processed the response.
 
@@ -34,13 +34,13 @@ class SpiderMiddleware(Middleware):
 class SpiderMiddlewareManager(MiddlewareLoader):
     name = 'SPIDER_MIDDLEWARES'
 
-    async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
+    async def process_start_requests(self, result: SpiderResult) -> SpiderResult:
         for md in self._middlewares:
             result = md.process_start_requests(result)
         async for r in result:
             yield r
 
-    async def process_spider_output(self, response: Response, result: SpiderRequest) -> SpiderRequest:
+    async def process_spider_output(self, response: Response, result: SpiderResult) -> SpiderResult:
         # Called with the results returned from the Spider, after
         # it has processed the response.
 

@@ -3,11 +3,11 @@ from fspider.downloadermiddlewares import DownloaderMiddleware
 from fspider.http.request import Request
 from fspider.http.response import Response
 from fspider.spidermiddlewares import SpiderMiddleware
-from fspider.utils.type import SpiderRequest
+from fspider.utils.type import SpiderResult
 
 
 class ${ProjectName}SpiderMiddleware(SpiderMiddleware):
-    async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
+    async def process_start_requests(self, result: SpiderResult) -> SpiderResult:
         async for r in result:
             print('process_start_requests',r)
             yield r
@@ -22,7 +22,7 @@ class ${ProjectName}SpiderMiddleware(SpiderMiddleware):
     async def process_spider_input(self, response: Response):
         return None
 
-    async def process_spider_output(self, response: Response, result: SpiderRequest) -> SpiderRequest:
+    async def process_spider_output(self, response: Response, result: SpiderResult) -> SpiderResult:
         # Called with the results returned from the Spider, after
         # it has processed the response.
 

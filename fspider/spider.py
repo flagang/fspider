@@ -15,7 +15,7 @@ class Spider:
     }
     start_urls: List[str]
     name: Optional[str] = None
-
+    allow_domains=[]
     def __init__(self):
         self.settings = get_settings()
         self.settings.update(self.custom_settings)

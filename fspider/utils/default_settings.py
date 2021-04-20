@@ -4,7 +4,8 @@ DOWNLOADER_MIDDLEWARES = {
     'fspider.downloadermiddlewares.down.DefaultDownloaderMiddleware': 999,
 }
 SPIDER_MIDDLEWARES = {
-    'fspider.spidermiddlewares.depth.DepthMiddleware': 900
+    'fspider.spidermiddlewares.offsite.OffsiteMiddleware': 500,
+    'fspider.spidermiddlewares.depth.DepthMiddleware': 900,
     # 'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 50,
     #     'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': 500,
     #     'scrapy.spidermiddlewares.referer.RefererMiddleware': 700,
