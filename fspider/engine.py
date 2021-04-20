@@ -107,6 +107,7 @@ class Crawler:
             context.spider.set(spider)
             settings = spider.settings
             workers = settings.get('WORKERS')
+            context.settings.set(settings)
             worker = Worker(spider, workers)
             self._running_worker.append(worker)
             await signals.send(signal=signals.spider_opened)  # spider 和 middlewares 都已加载完成

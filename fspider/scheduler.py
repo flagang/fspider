@@ -9,6 +9,8 @@ import hashlib
 
 from fspider.utils.reqser import request_to_dict, request_from_dict
 
+logger = logging.getLogger(__name__)
+
 
 class Scheduler:
     def __init__(self, spider: Spider):
@@ -41,8 +43,8 @@ class PyScheduler(Scheduler):
 
     def push_request(self, request: Request):
         _fingerprint = self.request_fingerprint(request)
-        if _fingerprint in self._dupefilter:
-            logging.info(f'{request} dupefilter ')
+        if request.dont_filter is False and _fingerprint in self._dupefilter:
+            logger.info(f'{request} dupefilter ')
         else:
             self._requests.append(request)
             self._dupefilter.add(_fingerprint)

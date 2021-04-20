@@ -1,13 +1,13 @@
 import logging
 
 from fspider.http.response import Response
-from fspider.utils.middleware import MiddlewareLoader
+from fspider.utils.middleware import MiddlewareLoader, Middleware
 from fspider.utils.type import SpiderRequest
 
 logger = logging.getLogger(__name__)
 
 
-class SpiderMiddleware:
+class SpiderMiddleware(Middleware):
     async def process_start_requests(self, result: SpiderRequest) -> SpiderRequest:
         async for r in result:
             yield r

@@ -18,10 +18,15 @@ def loads(mw_settings: MiddlewareSetting) -> List:
     return _middlewares
 
 
-class MiddlewareLoader:
+class Middleware:
     def __init__(self, settings: Dict = None):
         if settings is None:
             settings = context.settings.get()
-        logger.info(settings.get(self.name))
-        self._middlewares: List = loads(settings.get(self.name))
+        self.settings = settings
+
+
+class MiddlewareLoader(Middleware):
+    def __init__(self, settings: Dict = None):
+        super().__init__(settings)
+        self._middlewares: List = loads(self.settings.get(self.name))
         logger.info(self._middlewares)

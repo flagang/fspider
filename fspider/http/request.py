@@ -8,7 +8,7 @@ from fspider.http.response import Response
 
 class Request:
     def __init__(self, url: str, callback: Callable[[Response], AsyncGenerator], method: str = 'GET',
-                 headers: Dict = None, dont_filter: bool = False, meta: dict = None,
+                 headers: Dict = None, dont_filter: bool = False, meta: dict = None, priority: int = 0,
                  data: Any = None, json: Any = None, timeout: int = 10, **kwargs):
         """
 
@@ -35,6 +35,7 @@ class Request:
         self.client_timeout = ClientTimeout(connect=timeout)
         self.kwargs = kwargs
         self.dont_filter = dont_filter
+        self.priority = priority
         if meta is None: meta = {}
         self.meta = meta
 

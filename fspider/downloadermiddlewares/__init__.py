@@ -3,12 +3,12 @@ from typing import Union
 
 from fspider.http.request import Request
 from fspider.http.response import Response
-from fspider.utils.middleware import MiddlewareLoader
+from fspider.utils.middleware import MiddlewareLoader, Middleware
 
 logger = logging.getLogger(__name__)
 
 
-class DownloaderMiddleware:
+class DownloaderMiddleware(Middleware):
     async def process_request(self, request: Request) -> Union[Request, Response, None]:
         # Called for each request that goes through the downloader
         # middleware.
