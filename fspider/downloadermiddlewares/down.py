@@ -7,4 +7,6 @@ from fspider.http.response import Response
 
 class DefaultDownloaderMiddleware(DownloaderMiddleware):
     async def process_request(self, request: Request) -> Union[Request, Response, None]:
-        return await down(request)
+        response = await down(request)
+        response.request = request
+        return response

@@ -1,13 +1,11 @@
 import collections
 
 from aiohttp import ClientTimeout
-from typing import Callable, Dict, Any, AsyncGenerator
-
-from fspider.http.response import Response
+from typing import Callable, Dict, Any, AsyncGenerator, Union
 
 
 class Request:
-    def __init__(self, url: str, callback: Callable[[Response], AsyncGenerator], method: str = 'GET',
+    def __init__(self, url: str, callback: Union[AsyncGenerator, Callable], method: str = 'GET',
                  headers: Dict = None, dont_filter: bool = False, meta: dict = None, priority: int = 0,
                  data: Any = None, json: Any = None, timeout: int = 10, **kwargs):
         """
@@ -40,4 +38,4 @@ class Request:
         self.meta = meta
 
     def __str__(self):
-        return f'<{self.url} >'
+        return f'<{self.url}>(referer:{self.headers.get("Referer", None)})'
