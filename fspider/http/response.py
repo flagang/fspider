@@ -5,7 +5,7 @@ from fspider.http.request import Request
 
 class Response:
     def __init__(self, url: str, status: int, body: bytes, encoding: str = 'utf8',
-                 meta: dict = None, request: Request = None,):
+                 meta: dict = None, request: Request = None, cookies: dict = None):
         self.url = url
         self._encoding = encoding
         self._body = body
@@ -13,6 +13,7 @@ class Response:
         self._selector: Selector = None
         self.meta = meta
         self.request = request
+        self.cookies = cookies
 
     @property
     def body(self) -> bytes:

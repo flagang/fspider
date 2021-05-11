@@ -27,6 +27,7 @@ setup(
         'aiohttp>=3.6.2',
         'fastapi>=0.54.2',
         'redis>=3.5.1'
+        'PyDispatcher>=2.0.5',
     ],
     entry_points={
         'console_scripts': ['fspider = fspider.cmdline:execute']
@@ -37,5 +38,5 @@ setup(
     license="MIT",
     packages=find_packages(),
     include_package_data=True,
-    zip_safe=False,#True 的话egg方式安装
+    zip_safe=False,  # True 的话egg方式安装
 )

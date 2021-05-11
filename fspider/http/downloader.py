@@ -1,4 +1,5 @@
 import logging
+from http.cookies import SimpleCookie
 
 from aiohttp import ClientSession, TCPConnector
 
@@ -25,14 +26,20 @@ async def get(request: Request) -> Response:
     async with session.get(url=request.url, headers=request.headers, timeout=request.client_timeout,
                            **request.kwargs) as r:
         body = await r.read()
-        return Response(request.url, body=body, status=r.status, encoding=r.get_encoding(), meta=request.meta)
+        return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status, encoding=r.get_encoding(),
+                        meta=request.meta)
 
 
 async def post(request: Request) -> Response:
     async with session.post(url=request.url, json=request.json, data=request.data, headers=request.headers,
                             timeout=request.client_timeout, **request.kwargs) as r:
         body = await r.read()
-        return Response(request.url, body=body, status=r.status, encoding=r.get_encoding(), meta=request.meta)
+        return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status, encoding=r.get_encoding(),
+                        meta=request.meta)
+
+
+def extract_cookies(cookies: SimpleCookie) -> dict:
+    return {k: v.value for k, v in cookies.items()}
 
 
 async def close():
