@@ -1,7 +1,7 @@
 import logging
 from http.cookies import SimpleCookie
 
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession, TCPConnector, ClientTimeout
 
 from fspider import signals
 from fspider.http.request import Request
@@ -23,18 +23,20 @@ async def down(request: Request) -> Response:
 
 
 async def get(request: Request) -> Response:
-    async with session.get(url=request.url, headers=request.headers, timeout=request.client_timeout,
+    async with session.get(url=request.url, headers=request.headers, timeout=ClientTimeout(total=request.timeout),
                            **request.kwargs) as r:
         body = await r.read()
-        return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status, encoding=r.get_encoding(),
+        return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status,
+                        encoding=r.get_encoding(),
                         meta=request.meta)
 
 
 async def post(request: Request) -> Response:
     async with session.post(url=request.url, json=request.json, data=request.data, headers=request.headers,
-                            timeout=request.client_timeout, **request.kwargs) as r:
+                            timeout=ClientTimeout(total=request.timeout), **request.kwargs) as r:
         body = await r.read()
-        return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status, encoding=r.get_encoding(),
+        return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status,
+                        encoding=r.get_encoding(),
                         meta=request.meta)
 
 

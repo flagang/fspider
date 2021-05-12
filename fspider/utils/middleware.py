@@ -1,5 +1,6 @@
 import logging
-from typing import Dict, Union, List
+import pprint
+from typing import Dict, List
 
 from fspider import context
 from fspider.exceptions import NotConfigured
@@ -33,4 +34,4 @@ class MiddlewareLoader(Middleware):
     def __init__(self, settings: Dict = None):
         super().__init__(settings)
         self._middlewares: List = loads(self.settings.get(self.name))
-        logger.info(self._middlewares)
+        logger.info(pprint.pformat(self._middlewares))
