@@ -3,10 +3,12 @@ import collections
 from aiohttp import ClientTimeout
 from typing import Callable, Dict, Any, AsyncGenerator, Union
 
+from fspider.http.headers import Headers
+
 
 class Request:
     def __init__(self, url: str, callback: Union[AsyncGenerator, Callable], cookies: dict = None, method: str = 'GET',
-                 headers: Dict = None, dont_filter: bool = False, meta: dict = None, priority: int = 0,
+                 headers: Headers = None, dont_filter: bool = False, meta: dict = None, priority: int = 0,
                  data: Any = None, json: Any = None, timeout: int = None, **kwargs):
         """
 
@@ -20,12 +22,9 @@ class Request:
         :param timeout:
         :param kwargs:
         """
-        self.headers = {
-            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36'}
         self.url = url
         self.callback = callback
-        if headers:
-            self.headers.update(headers)
+        self.headers = Headers(headers or {})
         self.json = json
         self.data = data
         self.method = method.upper()

@@ -1,3 +1,26 @@
+include README.md
+include AUTHORS
+include INSTALL
+include LICENSE
+include MANIFEST.in
+include NEWS
+
+include fspider/VERSION
+include fspider/mime.types
+
+include codecov.yml
+include conftest.py
+include pytest.ini
+include requirements-*.txt
+include tox.ini
+
 recursive-include fspider/templates *
+recursive-include fspider license.txt
+recursive-include docs *
+prune docs/build
+
+recursive-include extras *
+recursive-include bin *
+recursive-include tests *
 
 global-exclude __pycache__ *.py[cod]

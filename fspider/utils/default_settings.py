@@ -1,3 +1,5 @@
+from importlib import import_module
+
 WORKERS = 10
 scheduler_cls = 'fspider.scheduler.PyScheduler'
 DOWNLOADER_MIDDLEWARES = {
@@ -5,7 +7,7 @@ DOWNLOADER_MIDDLEWARES = {
     # 'fspiderdownloadermiddlewares.httpauth.HttpAuthMiddleware': 300,
     'fspider.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
     'fspider.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': 400,
-    # 'fspiderdownloadermiddlewares.useragent.UserAgentMiddleware': 500,
+    'fspider.downloadermiddlewares.useragent.UserAgentMiddleware': 500,
     # 'fspiderdownloadermiddlewares.retry.RetryMiddleware': 550,
     # 'fspiderdownloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 560,
     # 'fspiderdownloadermiddlewares.redirect.MetaRefreshMiddleware': 580,
@@ -25,5 +27,5 @@ SPIDER_MIDDLEWARES = {
     # 'fspiderspidermiddlewares.httperror.HttpErrorMiddleware': 50,
     #     'fspiderspidermiddlewares.offsite.OffsiteMiddleware': 500,
     #     'fspiderspidermiddlewares.urllength.UrlLengthMiddleware': 800,
-    #     'fspiderspidermiddlewares.depth.DepthMiddleware': 900,
 }
+USER_AGENT = f'Fspider/{import_module("fspider").__version__}'
