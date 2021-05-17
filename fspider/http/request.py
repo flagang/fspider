@@ -7,7 +7,8 @@ from fspider.http.headers import Headers
 
 
 class Request:
-    def __init__(self, url: str, callback: Union[AsyncGenerator, Callable], cookies: dict = None, method: str = 'GET',
+    def __init__(self, url: str, callback: Union[AsyncGenerator, Callable] = None, cookies: dict = None,
+                 method: str = 'GET',
                  headers: Headers = None, dont_filter: bool = False, meta: dict = None, priority: int = 0,
                  data: Any = None, json: Any = None, timeout: int = None, **kwargs):
         """

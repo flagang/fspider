@@ -3,7 +3,7 @@ from importlib import import_module
 WORKERS = 10
 scheduler_cls = 'fspider.scheduler.PyScheduler'
 DOWNLOADER_MIDDLEWARES = {
-    # 'fspiderdownloadermiddlewares.robotstxt.RobotsTxtMiddleware': 100,
+    'fspider.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': 100,
     # 'fspiderdownloadermiddlewares.httpauth.HttpAuthMiddleware': 300,
     'fspider.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
     'fspider.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': 400,
@@ -29,3 +29,5 @@ SPIDER_MIDDLEWARES = {
     #     'fspiderspidermiddlewares.urllength.UrlLengthMiddleware': 800,
 }
 USER_AGENT = f'Fspider/{import_module("fspider").__version__}'
+
+ROBOTSTXT_OBEY = True
