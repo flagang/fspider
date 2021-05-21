@@ -32,6 +32,8 @@ setup(
         'fastapi>=0.54.2',
         'redis>=3.5.1'
         'PyDispatcher>=2.0.5',
+        'brotlipy>=0.7.0'
+
     ],
     entry_points={
         'console_scripts': ['fspider = fspider.cmdline:execute']

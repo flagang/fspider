@@ -7,6 +7,7 @@ from fspider.http.response import Response
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'zh-CN,zh-HK;q=0.9,zh;q=0.8,en;q=0.7,la;q=0.6,ja;q=0.5',
+    'accept-encoding': 'gzip, deflate, br',
 }
 
 

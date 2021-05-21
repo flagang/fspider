@@ -4,9 +4,9 @@ import random
 import signal
 from asyncio import iscoroutinefunction
 from typing import Type, List, Callable, Any
+
 from fspider import context, signals
 from fspider.downloadermiddlewares import DownloaderMiddlewareManager
-from fspider.http.downloader import down
 from fspider.http.request import Request
 from fspider.pipelines import PipelineManager
 from fspider.spider import Spider
@@ -55,23 +55,25 @@ class Worker:
         while not self._close_signal:
             request = self._scheduler.pop_request()
             if request:
-                logger.info(f'worker_{work_no}: begin process {request}')
                 if work_no in self.idle:
                     self.idle.remove(work_no)
                 await self.work(request)
-                logger.info(f'worker_{work_no}: end process {request}')
             else:
                 self.idle.add(work_no)
                 await asyncio.sleep(1)
                 if len(self.idle) == self._num:  # 所有worker都空闲表示任务完成
                     #     # do idle work
                     break
-            logger.info(f'all task idle worker {work_no} end')
 
     async def work(self, request: Request):
         try:
             callback = request.callback
             response = await self.downloader_middlewares_manager.down(request)
+            if isinstance(response, Request):
+                self._scheduler.push_request(response)
+                return
+            elif response is None:
+                return
             await asyncio.sleep(random.randint(10, 15) / 10)
             async for result in self.spider_middlewares_manager.process_spider_output(response, callback(response)):
                 if isinstance(result, Request):

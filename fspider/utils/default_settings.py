@@ -8,7 +8,7 @@ DOWNLOADER_MIDDLEWARES = {
     'fspider.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
     'fspider.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': 400,
     'fspider.downloadermiddlewares.useragent.UserAgentMiddleware': 500,
-    # 'fspiderdownloadermiddlewares.retry.RetryMiddleware': 550,
+    'fspider.downloadermiddlewares.retry.RetryMiddleware': 550,
     # 'fspiderdownloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 560,
     # 'fspiderdownloadermiddlewares.redirect.MetaRefreshMiddleware': 580,
     # 'fspiderdownloadermiddlewares.httpcompression.HttpCompressionMiddleware': 590,
@@ -31,3 +31,8 @@ SPIDER_MIDDLEWARES = {
 USER_AGENT = f'Fspider/{import_module("fspider").__version__}'
 
 ROBOTSTXT_OBEY = True
+
+RETRY_ENABLED = True
+RETRY_TIMES = 2
+RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429]
+RETRY_PRIORITY_ADJUST = -1
