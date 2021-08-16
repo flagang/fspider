@@ -2,7 +2,7 @@ from asyncio.coroutines import iscoroutine
 
 import asyncio
 import logging
-from typing import AsyncIterable
+from typing import AsyncIterable, Dict
 from fspider.engine import Crawler
 from fspider.http.request import Request
 from fspider.http.response import Response
@@ -11,7 +11,7 @@ from fspider.spider import Spider
 
 class TestSpider(Spider):
     name = 'test'
-    settings = {
+    custom_settings: Dict = {
         'scheduler_cls': 'fspider.scheduler.PyScheduler',
         # 'scheduler_cls': 'fspider.scheduler.RedisScheduler',
         # 'redis_url': "redis://127.0.0.1:6379/11",
@@ -51,10 +51,11 @@ async def serve(crawler: Crawler):
     server = Server(config)
     await server.serve()
 
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s  [%(name)s] %(levelname)s: %(message)s')
     crawler = Crawler()
     # crawler.add_job(timer)#简易定时任务
-    crawler.add_job(serve)#同时启动web服务 请在py3.7使用,py3.8有bug
+    # crawler.add_job(serve)#同时启动web服务 请在py3.7使用,py3.8有bug
     crawler.add_spider(TestSpider)
     crawler.run(stop=False)
