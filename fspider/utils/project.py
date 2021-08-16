@@ -1,3 +1,4 @@
+import logging
 import os
 from configparser import ConfigParser
 from importlib import import_module
@@ -19,9 +20,13 @@ def get_default_settings() -> Dict:
 
 
 def get_settings() -> Dict:
-    md = get_settings_moudle()
-    module = import_module(md)
-    settings = get_md_map(module)
+    try:
+        md = get_settings_moudle()
+        module = import_module(md)
+        settings = get_md_map(module)
+    except ModuleNotFoundError:
+        logging.exception(f'settings {module}  ModuleNotFoundError use default_settings ')
+        settings = {}
     df_settings = get_default_settings()
     for k, v in settings.items():
         if isinstance(v, Dict) and k in df_settings:
