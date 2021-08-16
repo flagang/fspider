@@ -7,6 +7,7 @@ from fspider import signals
 from fspider.http.request import Request
 from fspider.http.response import Response
 
+logger = logging.getLogger(__name__)
 session: ClientSession = None
 
 
@@ -27,7 +28,7 @@ async def get(request: Request) -> Response:
                            **request.kwargs) as r:
         body = await r.read()
         return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status,
-                        encoding=r.get_encoding(),client_response=r,
+                        encoding=r.get_encoding(), client_response=r,
                         meta=request.meta)
 
 
@@ -36,7 +37,7 @@ async def post(request: Request) -> Response:
                             timeout=ClientTimeout(total=request.timeout), **request.kwargs) as r:
         body = await r.read()
         return Response(request.url, cookies=extract_cookies(r.cookies), body=body, status=r.status,
-                        encoding=r.get_encoding(),client_response=r,
+                        encoding=r.get_encoding(), client_response=r,
                         meta=request.meta)
 
 
@@ -45,4 +46,5 @@ def extract_cookies(cookies: SimpleCookie) -> dict:
 
 
 async def close():
+    logger.info('client session closed')
     await session.close()
