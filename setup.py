@@ -28,7 +28,7 @@ setup(
     [
         'uvicorn>=0.11.5',
         'parsel>=1.6.0',
-        'aiohttp>=3.6.2',
+        'aiohttp==3.7.3',
         'fastapi>=0.54.2',
         'redis>=3.5.1'
         'PyDispatcher>=2.0.5',
