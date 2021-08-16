@@ -1,7 +1,9 @@
 import asyncio
 import logging
+from fspider import signals
 from fspider.engine import Crawler
 from ${project_name}.spiders.test import TestSpider
+
 async def serve(crawler: Crawler):
     from fastapi import FastAPI
     from uvicorn import Config, Server
@@ -13,6 +15,7 @@ async def serve(crawler: Crawler):
 
     config = Config(app, host="0.0.0.0", port=8000, log_level="info", reload=True)
     server = Server(config)
+    signals.connect(server.shutdown, signals.crawler_closed, sender='fspider')
     await server.serve()
 
 
