@@ -17,6 +17,7 @@ setup(
     version=version,
     description="基于asyncio异步爬虫网络框架，仿scrapy",
     long_description=read("README.md"),
+    long_description_content_type='text/markdown',
     classifiers=
     [
         'License :: OSI Approved :: MIT License',
