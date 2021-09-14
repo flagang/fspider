@@ -2,15 +2,16 @@
 
 #### 介绍
 
-fspider是一款基于python原生协程asyncio的异步网络爬虫框架。 框架灵感来自scrapy,并尽可能实现相关功能
+fspider是一款基于python原生协程asyncio的异步网络爬虫框架，仿照scrapy
 
 #### 要求
 
 python>=3.7
 
 #### 安装
+1.```pip install fspider```
 
-目前不支持pip安装,下载源码 然后执行```python setup.py install```
+2.或者下载源码 然后执行```python setup.py install```
 
 #### 教程
 
