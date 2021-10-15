@@ -11,6 +11,13 @@ logger = logging.getLogger(__name__)
 session: ClientSession = None
 
 
+async def ger_sess() -> ClientSession:
+    global session
+    if session is None:
+        session = ClientSession(connector=TCPConnector(limit=200))
+        signals.connect(close, signals.crawler_closed, sender='fspider')
+    return session
+
 async def down(request: Request) -> Response:
     logging.info(f'begin down {request}')
     global session
