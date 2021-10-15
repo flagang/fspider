@@ -114,7 +114,7 @@ class Crawler:
             self._running_worker.append(worker)
             await signals.send(signal=signals.spider_opened)  # spider 和 middlewares 都已加载完成
             await worker.run()
-            await spider.spider_closed()
+            await signals.send(signal=signals.spider_closed)
         except Exception:
             logging.exception(f'Spider  {spider_cls.name} error')
         finally:

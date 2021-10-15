@@ -33,7 +33,7 @@ class MediaPipeline(Pipeline, HttpClient):
     async def item_completed(self, results: typing.Union[str, Exception], item: Item) -> Item:
         raise NotImplemented
 
-    def from_urls(self, urls: list[str]) -> typing.Iterable[Request]:
+    def from_urls(self, urls: typing.List[str]) -> typing.Iterator[Request]:
         for url in urls:
             yield Request(url)
 
@@ -53,6 +53,7 @@ class MediaPipeline(Pipeline, HttpClient):
         async with self.session.get(url, timeout=timeout) as resp:
             if self.size_limit:
                 _size = resp.headers.get('Content-Length', 0)
+                _size = int(_size)
                 if _size > 0 and _size > self.size_limit:
                     raise Exception('size_limit')
             filepath = self.get_filepath(url, resp.headers.get('Content-Type', ''))
