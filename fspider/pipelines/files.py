@@ -66,10 +66,10 @@ class MediaPipeline(Pipeline, HttpClient):
             _start_time = time.time()
             with open(filepath, mode='wb') as f:
                 async for index, data in aenumerate(resp.content.iter_chunked(1024), 1):
-                    if index == 100 and _size > 0 and self.time_limit > 0:  # 100kb
-                        speed = 100 / (time.time() - _start_time)
-                        logger.debug(f'文件大小:{_size} 预计时间:{speed}.2f kb/s    {url}')
+                    if index == 50 and _size > 0 and self.time_limit > 0:  # 50kb
+                        speed = 50 / (time.time() - _start_time)
                         _ttime = _size / 1024 / speed
+                        logger.debug(f'文件大小:{(_size/1024**2):.2f}M speed:{speed:.2f} kb/s 预计时间:{_ttime:.2f}  {url}')
                         if _ttime > self.time_limit:
                             logger.info(f'预计时间:{_ttime:.2f} > {self.time_limit}  {url}')
                             raise Exception('time limit')
