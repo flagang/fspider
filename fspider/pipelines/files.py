@@ -1,7 +1,9 @@
 import asyncio
 import hashlib
+import logging
 import mimetypes
 import os
+import time
 import typing
 from typing import Optional
 
@@ -10,7 +12,10 @@ from aiohttp import ClientTimeout
 from fspider.http.request import Request
 from fspider.pipelines import Pipeline
 from fspider.pipelines.http import HttpClient
+from fspider.utils.asynclib import aenumerate
 from fspider.utils.type import Item
+
+logger = logging.getLogger(__name__)
 
 
 class MediaPipeline(Pipeline, HttpClient):
@@ -50,6 +55,7 @@ class MediaPipeline(Pipeline, HttpClient):
         timeout = None
         if self.time_limit > 0:
             timeout = ClientTimeout(total=self.time_limit)
+        logger.debug(f'start down {url}')
         async with self.session.get(url, timeout=timeout) as resp:
             if self.size_limit:
                 _size = resp.headers.get('Content-Length', 0)
@@ -57,9 +63,18 @@ class MediaPipeline(Pipeline, HttpClient):
                 if _size > 0 and _size > self.size_limit:
                     raise Exception('size_limit')
             filepath = self.get_filepath(url, resp.headers.get('Content-Type', ''))
+            _start_time = time.time()
             with open(filepath, mode='wb') as f:
-                async for data in resp.content.iter_chunked(1024):
+                async for index, data in aenumerate(resp.content.iter_chunked(1024), 1):
+                    if index == 100 and _size > 0 and self.time_limit > 0:  # 100kb
+                        speed = 100 / (time.time() - _start_time)
+                        logger.debug(f'文件大小:{_size} 预计时间:{speed}.2f kb/s    {url}')
+                        _ttime = _size / 1024 / speed
+                        if _ttime > self.time_limit:
+                            logger.info(f'预计时间:{_ttime:.2f} > {self.time_limit}  {url}')
+                            raise Exception('time limit')
                     f.write(data)
+            logger.debug(f'end down {url}')
             return filepath
 
     @staticmethod
