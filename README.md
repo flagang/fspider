@@ -9,6 +9,7 @@ fspider是一款基于python原生协程asyncio的异步网络爬虫框架，仿
 python>=3.7
 
 #### 安装
+
 1.```pip install fspider```
 
 2.或者下载源码 然后执行```python setup.py install```
@@ -163,3 +164,75 @@ br'，接受压缩数据，不需要的话可以删除accept-encoding）
 ##### CookiesMiddleware
 
 ##### DefaultDownloaderMiddleware
+
+#### Item Pipeline
+
+当spider 抓取了item,将会移交到 item pipeline ,按照顺序执行相应的组件 一个自定义的pipeline 如下所示：
+
+```python
+import logging
+import typing
+from fspider.pipelines import Pipeline
+from fspider.utils.type import Item
+
+
+class FspidertestPipeline(Pipeline):
+    async def process_item(self, item: Item) -> typing.Optional[Item]:
+        logging.info(item)
+        return item
+```
+
+- 你必须实现process_item方法
+    - 每个pipeline都会执行此方法来处理
+    - ```return item``` 将会继续执行后续pipeline ，```return None```将会停止执行后续pipiline
+
+- 然后需要在setting 配置启用：
+
+```python
+ITEM_PIPELINES = {
+    'fspidertest.pipelines.FspidertestPipeline': 300,
+}
+```
+
+##### MediaPipeline
+
+这是一个用来并发处理image、video等文件的pipeline，并提供了并发控制、大小限制、下载时间估算、超时等功能 默认配置参数
+
+- meida_key：#item[meida_key] 是将要下载的url列表 默认值：media_urls
+- CONN_LIMIT：最大并发 默认值：5
+- LIMIT_PER_HOST：单个域名最大并发 默认值：2
+- file_dir：保存目录 默认当前目录
+- size_limit: 最大文件限制 默认：1024 * 1024 * 1024 # 1B+GB
+- time_limit：最大时长 默认：10 * 60 # 10分钟
+
+item_completed 方法：
+> params  :
+>> ```results: typing.Union[str, Exception]```  返回文件保存路径或者exception <br>
+> > item
+
+> return ```item``` or ```None```
+
+example:
+
+```python
+
+import logging
+import typing
+from fspider.pipelines.files import MediaPipeline
+from fspider.utils.type import Item
+
+
+class FspidertestPipeline(MediaPipeline):
+    meida_key = 'images'
+    LIMIT_PER_HOST = 2
+
+    # async def process_item(self, item: Item) -> typing.Optional[Item]:
+    #     item = await super().process_item(item)
+    #     logging.info(item)
+    #     return item
+
+    async def item_completed(self, results: typing.Union[str, Exception], item: Item) -> Item:
+        item['media_path'] = [r for r in results if not isinstance(r, Exception)]
+        return item
+```
+
