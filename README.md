@@ -202,7 +202,7 @@ ITEM_PIPELINES = {
 - CONN_LIMIT：最大并发 默认值：5
 - LIMIT_PER_HOST：单个域名最大并发 默认值：2
 - file_dir：保存目录 默认当前目录
-- size_limit: 最大文件限制 默认：1024 * 1024 * 1024 # 1B+GB
+- size_limit: 最大文件限制 默认：1024 * 1024 * 1024 # 1GB
 - time_limit：最大时长 默认：10 * 60 # 10分钟
 
 item_completed 方法：

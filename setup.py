@@ -15,6 +15,7 @@ with open(join(dirname(__file__), 'fspider/VERSION'), 'rb') as f:
 setup(
     name="fspider",
     version=version,
+    url="https://github.com/flagang/fspider",
     description="基于asyncio异步爬虫网络框架，仿scrapy",
     long_description=read("README.md"),
     long_description_content_type='text/markdown',
